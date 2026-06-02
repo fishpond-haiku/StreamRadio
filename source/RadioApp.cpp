@@ -21,7 +21,6 @@
 
 #include "RadioApp.h"
 #include "StationFinder.h"
-#include "StationFinderListenLive.h"
 #include "StationFinderRadioNetwork.h"
 
 
@@ -127,13 +126,7 @@ main(int argc, char* argv[])
 {
 	StationFinderRadioNetwork::RegisterSelf();
 
-	// FIXME: "listenlive.eu" no longer seems to exist, though it looks like
-	// "radiomap.eu" might be its successor? This plugin crashes after searching
-	// anyway...
-	// StationFinderListenLive::RegisterSelf();
-
 	new RadioApp();
 	be_app->Run();
-
 	delete be_app;
 }
