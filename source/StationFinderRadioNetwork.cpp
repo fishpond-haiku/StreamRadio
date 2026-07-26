@@ -260,11 +260,13 @@ StationFinderRadioNetwork::_CheckServer()
 
 	// Try to find an active server!
 	BUrl testServerUrl(kBaseUrl, true);
+#if 0
 	status_t result = HttpUtils::CheckPort(testServerUrl, &testServerUrl, 0);
 	if (result != B_OK) {
 		// Oh no...this is, uh, pretty bad.
 		return result;
 	}
+#endif
 
 	// Cache it!
 	sCachedServerUrl.SetTo(testServerUrl.UrlString());
