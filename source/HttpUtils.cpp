@@ -101,7 +101,7 @@ HttpUtils::CheckPort(BUrl url, BUrl* newUrl, uint32 flags)
 		= ipAddress.ToString(ipAddress.Port() != 80).Prepend("://").Prepend(url.Protocol());
 	if (url.HasPath())
 		newUrlString.Append(url.Path());
-	newUrl->SetUrlString(newUrlString.String());
+	newUrl->SetUrlString(newUrlString.String(), true);
 
 	return B_OK;
 }

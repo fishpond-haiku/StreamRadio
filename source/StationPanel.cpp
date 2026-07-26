@@ -216,7 +216,7 @@ StationPanel::MessageReceived(BMessage* msg)
 					BString search;
 					search.SetToFormat("https://google.com/search?q=%s",
 						BUrl::UrlEncode(*station->Name()).String());
-					BUrl searchUrl(search);
+					BUrl searchUrl(search, true);
 					searchUrl.OpenWithPreferredApplication(false);
 				} else
 					station->StationUrl().OpenWithPreferredApplication(false);

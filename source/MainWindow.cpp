@@ -324,7 +324,7 @@ MainWindow::MessageReceived(BMessage* message)
 		{
 			BUrl userguide = BUrl(
 				"https://github.com/HaikuArchives/"
-				"StreamRadio/blob/master/docs/userguide.md");
+				"StreamRadio/blob/master/docs/userguide.md", true);
 			userguide.OpenWithPreferredApplication(true);
 
 			break;

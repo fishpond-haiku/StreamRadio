@@ -106,7 +106,7 @@ StationFinderListenLive::StationFinderListenLive()
 	  fPlsLookupList()
 {
 	serviceName.SetTo(B_TRANSLATE("listenlive.eu [experimental]"));
-	serviceHomePage.SetUrlString("http://www.listenlive.eu/");
+	serviceHomePage.SetUrlString("http://www.listenlive.eu/", true);
 
 	BString tmp(kCountryList);
 	tmp.Split("\r", true, fCountryKeywordAndPath);
@@ -174,7 +174,7 @@ StationFinderListenLive::FindBy(
 	BString path(keywordAndPaths->StringAt(keywordIndex));
 	path.Remove(0, path.FindFirst('|') + 1);
 	urlString << path << ".html";
-	BUrl url(urlString);
+	BUrl url(urlString, true);
 
 	BMallocIO* data = HttpUtils::GetAll(url);
 	if (data != NULL) {
@@ -261,10 +261,10 @@ StationFinderListenLive::ParseCountryReturn(BMallocIO* data, const char* searchF
 
 		BString source(doc + matches[5].rm_so);
 		if (source.EndsWith(".pls") || source.EndsWith(".m3u")) {
-			station->SetSource(BUrl(source));
+			station->SetSource(BUrl(source, true));
 			fPlsLookupList.AddItem(station);
 		} else
-			station->SetStreamUrl(BUrl(source));
+			station->SetStreamUrl(BUrl(source, true));
 
 		for (int32 i = matches[6].rm_so; i < matches[6].rm_eo; i++) {
 			if (!strchr("0123456789.", doc[i])) {
@@ -359,10 +359,10 @@ StationFinderListenLive::ParseGenreReturn(BMallocIO* data, const char* searchFor
 
 		BString source(doc + matches[6].rm_so);
 		if (source.EndsWith(".pls") || source.EndsWith(".m3u")) {
-			station->SetSource(BUrl(source));
+			station->SetSource(BUrl(source, true));
 			fPlsLookupList.AddItem(station);
 		} else
-			station->SetStreamUrl(BUrl(source));
+			station->SetStreamUrl(BUrl(source, true));
 
 		for (int32 i = matches[7].rm_so; i < matches[7].rm_eo; i++) {
 			if (!strchr("0123456789.", doc[i])) {

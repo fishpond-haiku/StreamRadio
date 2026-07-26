@@ -60,12 +60,12 @@ const char* kMimePls = "audio/x-scpls";
 
 Station::Station(BString name, BString uri)
 	: fName(name),
-	  fStreamUrl(uri),
-	  fStationUrl(B_EMPTY_STRING),
+	  fStreamUrl(uri, true),
+	  fStationUrl(B_EMPTY_STRING, true),
 	  fGenre(B_EMPTY_STRING),
 	  fCountry(B_EMPTY_STRING),
 	  fLanguage(B_EMPTY_STRING),
-	  fSource(B_EMPTY_STRING),
+	  fSource(B_EMPTY_STRING, true),
 	  fMime(B_EMPTY_STRING),
 	  fEncoding(0),
 	  fLogo(NULL),
@@ -90,7 +90,7 @@ Station::Station(const Station& orig)
 	  fGenre(orig.fGenre),
 	  fCountry(orig.fCountry),
 	  fLanguage(orig.fLanguage),
-	  fSource(B_EMPTY_STRING),
+	  fSource(B_EMPTY_STRING, true),
 	  fEncoding(orig.fEncoding),
 	  fRating(orig.fRating),
 	  fBitRate(orig.fBitRate),
@@ -314,7 +314,7 @@ Station::Probe()
 		fGenre = headers[index].Value();
 
 	if ((index = headers.HasHeader("Icy-Url")) >= 0 && strlen(headers[index].Value()) > 0)
-		fStationUrl.SetUrlString(headers[index].Value());
+		fStationUrl.SetUrlString(headers[index].Value(), true);
 
 	if ((index = headers.HasHeader("Ice-Audio-Info")) >= 0) {
 		BString audioInfo(headers[index].Value());
@@ -399,7 +399,7 @@ Station::ParseUrlReference(const char* body, const BUrl& baseUrl)
 	for (int32 i = 0; i < 3; i++) {
 		char* match = RegFind(body, patterns[i]);
 		if (match != NULL) {
-			fStreamUrl = BUrl(baseUrl, match);
+			fStreamUrl = BUrl(baseUrl, BString(match));
 			free(match);
 
 			match = RegFind(body, patterns[3]);
@@ -435,7 +435,7 @@ Station::Load(BString name, BEntry* entry)
 
 	status = file.ReadAttrString("META:url", &readString);
 
-	station->fStreamUrl.SetUrlString(readString);
+	station->fStreamUrl.SetUrlString(readString, true);
 
 	status = file.ReadAttrString("META:genre", &station->fGenre);
 
@@ -468,10 +468,10 @@ Station::Load(BString name, BEntry* entry)
 	station->fMime.SetTo(readString);
 
 	status = file.ReadAttrString("META:source", &readString);
-	station->fSource.SetUrlString(readString);
+	station->fSource.SetUrlString(readString, true);
 
 	status = file.ReadAttrString("META:stationurl", &readString);
-	station->fStationUrl.SetUrlString(readString);
+	station->fStationUrl.SetUrlString(readString, true);
 
 	status = file.ReadAttrString("META:uniqueidentifier", &readString);
 	station->fUniqueIdentifier.SetTo(readString);
@@ -501,7 +501,7 @@ Station::Load(BString name, BEntry* entry)
 
 	if (!station->fSource.IsValid()) {
 		BPath path(entry);
-		station->fSource.SetUrlString(BString("file://") << path.Path());
+		station->fSource.SetUrlString(BString("file://") << path.Path(), true);
 	}
 
 
@@ -555,7 +555,7 @@ Station::RegFind(const char* text, const char* pattern)
 Station*
 Station::LoadIndirectUrl(BString& shoutCastUrl)
 {
-	BUrl url(shoutCastUrl);
+	BUrl url(shoutCastUrl, true);
 	if (!url.IsValid())
 		return NULL;
 
@@ -586,7 +586,7 @@ Station::LoadIndirectUrl(BString& shoutCastUrl)
 	if (status != B_OK && contentType.StartsWith(("audio/")))
 		station->SetStreamUrl(url);
 
-	station->fSource.SetUrlString(shoutCastUrl);
+	station->fSource.SetUrlString(shoutCastUrl, true);
 
 	delete dataIO;
 
@@ -613,7 +613,7 @@ Station::LoadIndirectUrl(BString& shoutCastUrl)
 
 	shoutCastUrl.SetTo(finalUrl.UrlString());
 	shoutCastUrl.RemoveCharsSet("#?");
-	finalUrl.SetUrlString(shoutCastUrl);
+	finalUrl.SetUrlString(shoutCastUrl, true);
 
 	dataIO = HttpUtils::GetAll(finalUrl);
 	if (dataIO != NULL) {

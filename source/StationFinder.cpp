@@ -112,13 +112,9 @@ FindByCapability::SetKeyWords(char* keyWords, char* delimiter)
 
 StationFinderService::StationFinderService()
 	: serviceName("unknown"),
-	  serviceHomePage(""),
+	  serviceHomePage("", true),
 	  serviceLogo(NULL),
-#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
 	  findByCapabilities(5)
-#else
-	  findByCapabilities(5, true)
-#endif
 {
 }
 
