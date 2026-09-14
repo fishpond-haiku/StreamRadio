@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2008-2010 Lukas Sommer < SommerLuk at gmail dot com >
-    Copyright (C) 2017 Kai Niessen <kai.niessen@online.de>
+    Copyright (C) 2008-2026 Kai Niessen
     Copyright (C) 2020 Jacob Secunda
 
     This program is free software; you can redistribute it and/or
@@ -36,7 +36,6 @@
 #include <Url.h>
 #include <View.h>
 
-
 #include "RadioApp.h"
 
 
@@ -45,14 +44,15 @@
 
 
 MainWindow::MainWindow()
-	: BWindow(BRect(0, 0, 400, 200), B_TRANSLATE_SYSTEM_NAME("StreamRadio"), B_DOCUMENT_WINDOW, 0),
+	: BWindow(BRect(0, 0, 400, 200), B_TRANSLATE_SYSTEM_NAME("StreamRadio"), B_DOCUMENT_WINDOW, 
+	    B_AUTO_UPDATE_SIZE_LIMITS),
 	  fStationFinder(NULL)
 {
 	fSettings = &((RadioApp*)be_app)->Settings;
 
 	fAllowParallelPlayback = fSettings->GetAllowParallelPlayback();
 	fMenuParallelPlayback = new BMenuItem(
-			B_TRANSLATE("Allow parallel playback"), new BMessage(MSG_PARALLEL_PLAYBACK));
+		B_TRANSLATE("Allow parallel playback"), new BMessage(MSG_PARALLEL_PLAYBACK));
 	fMenuParallelPlayback->SetMarked(fAllowParallelPlayback);
 
 	fMainMenu = new BMenuBar(Bounds(), "MainMenu");
@@ -129,8 +129,9 @@ MainWindow::MessageReceived(BMessage* message)
 			StationListViewItem* stationItem;
 			BString result;
 			while (message->FindRef("refs", index++, &ref) == B_OK) {
-				Station* station = Station::Load(ref.name, new BEntry(&ref));
-				if ((station = Station::Load(ref.name, new BEntry(&ref)))) {
+				BEntry entry(&ref);
+				Station* station = Station::Load(ref.name, &entry);
+				if (station) {
 					Station* existingStation = fSettings->Stations->FindItem(station->Name());
 					if (existingStation) {
 						delete station;
@@ -144,7 +145,8 @@ MainWindow::MessageReceived(BMessage* message)
 							B_TRANSLATE("Added station %s to list"), station->Name()->String());
 					}
 				} else
-					result.SetToFormat(B_TRANSLATE("File could not be loaded as a station"));
+					result.SetToFormat(B_TRANSLATE("File %s could not be loaded as a station"), 
+						ref.name);
 				fStatusBar->SetText(result.String());
 			}
 
